@@ -2,13 +2,30 @@
 ?-['rules.pro'].
 initialize_board():-
     findall(Piece, initial(Piece), Board),
-    do_move(white, piece(white, knight,2, 1),Board, 3,3,NewBoard),
-    draw_board(NewBoard).
+    draw_board(Board),
+    play(Board,white).
+
+play(Board, Color):-
+  write("Введите имя фигуры :"),
+  read(Name),
+  write("Введите координату X фигуры :"),
+  read(X),
+  write("Введите координату Y фигуры :"),
+  read(Y),
+  write("Введите новую координату X фигуры :"),
+  read(X1),
+  write("Введите новую координату Y фигуры :"),
+  read(Y1),
+  do_move(Color,piece(Color, Name,X,Y),Board,X1,Y1,NewBoard),
+  draw_board(NewBoard),
+  opponent(Color,OppColor),
+  play(NewBoard,OppColor).
 
 do_move(PlayerC,piece(Color, Name, X, Y), Board, X1, Y1, NewBoard):-
   can_move(PlayerC,piece(Color, Name, X, Y), Board, X1, Y1),
   delete(Board,piece(Color, Name, X, Y),  PreBoard),
-  append(PreBoard,[piece(Color, Name, X1, Y1)],NewBoard).
+  delete(PreBoard,piece(_,_, X1,Y1), PreBoard1 ),
+  append(PreBoard1,[piece(Color, Name, X1, Y1)],NewBoard).
   
 
 

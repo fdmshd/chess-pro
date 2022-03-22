@@ -21,17 +21,17 @@ check_check(Board,PlayerColor):-
     opponent(PlayerColor,OpponentColor),
     can_move(PlayerColor,piece(OpponentColor,_,_,_),Board,X,Y).
 
-%TODO: В каждом блоке проверить существует ли фигура которой пытаются сходить
 %TODO: Для ферзя добавить проверку не стоит ли на проходе другая фигура
 %TODO: Для пешки логику боя на проходе задать
-%TODO: Для пешки логику первого хода задать(на два пля вперед)
+%TODO: Для пешки логику первого хода задать(на два поля вперед)
 %TODO: Изменить все ABS (как в коне)
 
 %TODO: Добавить предикат проверки наличия фигур между двумя полями
-% \/ - Это он внизу(Для слонов, не уверен, что работает)
+% \/ - Это он внизу(Для слонов, уверен, что не работает)
+
+pieceBetween(X,Y,X,Y,_).
+
 pieceBetween(X,Y,X1,Y1, Board):-
-    abs(X-X1)>1,
-    abs(Y-Y1)>1,
     member(piece(_,_,X+1,Y+1),Board),!,
     pieceBetween(X+1,Y+1,X1,Y1, Board).
 
@@ -54,12 +54,16 @@ canPieceMoveTo(piece(_, knight, X, Y),_, X1, Y1):-
 
 %rules for bishop
 canPieceMoveTo(piece(_, bishop, X, Y),Board, X1, Y1):-
-    abs(X - X1) = abs(Y - Y1),
+    Ax is abs(X - X1),
+    Ay is abs(Y - Y1),
+    Ax=Ay,
     pieceBetween(X,Y,X1,Y1, Board).
 
 %rules for queen
 canPieceMoveTo(piece(_, queen, X, Y),Board, X1, Y1):-
-    abs(X - X1) = abs(Y - Y1),
+    Ax is abs(X - X1),
+    Ay is abs(Y - Y1),
+    Ax=Ay,
     pieceBetween(X,Y,X1,Y1,Board).
 canPieceMoveTo(piece(_, queen, X, Y),Board, X1, Y1):-
     X = X1,
@@ -97,6 +101,8 @@ canPieceMoveTo(piece(Color, pawn, _, _),Board, X1, Y1):-
 canPieceMoveTo(piece(Color,king,X,Y),Board,X1,Y1):-
     opponent(Color,OppColor),
     not(can_move(OppColor,piece(OppColor,_,_,_),Board,X1,Y1)),
-    abs(X-X1)=<1,
-    abs(Y-Y1)=<1.
+    Ax is abs(X-X1),
+    Ax=<1,
+    Ay is abs(Y-Y1),
+    Ay=<1.
 
