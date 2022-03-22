@@ -1,6 +1,6 @@
 ?-['initial.pro'].
 ?-['letters.pro'].
-%?-['rules.pro'].
+?-['rules.pro'].
 initialize_board():-
     findall(Piece, initial(Piece), Board),
     draw_board(Board).

@@ -1,6 +1,10 @@
-move(Player,piece(Color, Name, X, Y), Board, X1, Y1):-
-    Player = Color,
+opponent(white,black).
+opponent(black,white).
+
+can_move(PlayerC,piece(Color, Name, X, Y), Board, X1, Y1):-
+    PlayerC = Color,
     vacant(Color,X1,Y1,Board),
+    member(piece(Color,Name,X,Y),Board),
     canPieceMoveTo(piece(Color,Name,X,Y),Board, X1,Y1).
 
 vacant(Color,X, Y, Board):- 
@@ -8,13 +12,19 @@ vacant(Color,X, Y, Board):-
     between(1, 8, X),
     not(member(piece(Color, _, X, Y), Board)).
 
-%проверить не связана ли фигура
-check_pin(piece(Color,Name,X,Y), X1,Y1).
-%Проверить защищает ли этот ход от шаха(если он случился).
-check_check().
+%TODO:проверить не связана ли фигура
+%check_pin(piece(Color,Name,X,Y), X1,Y1):- .
 
+%проверить случился ли шах
+check_check(Board,PlayerColor):- 
+    member(piece(PlayerColor, king, X,Y),Board),
+    opponent(PlayerColor,OpponentColor),
+    can_move(PlayerColor,piece(OpponentColor,_,_,_),Board,X,Y).
+
+%TODO: В каждом блоке проверить существует ли фигура которой пытаются сходить
 %TODO: Для ферзя добавить проверку не стоит ли на проходе другая фигура
 %TODO: Для пешки логику боя на проходе задать
+%TODO: Для пешки логику первого хода задать(на два пля вперед)
 
 %TODO: Добавить предикат проверки наличия фигур между двумя полями
 % \/ - Это он внизу(Для слонов, не уверен, что работает)
@@ -33,12 +43,12 @@ canPieceMoveTo(piece(_, rook, X, Y),Board, X1, Y1):-
 canPieceMoveTo(piece(_, rook, X, Y),Board, X1, Y1):-
     Y = Y1,
     between(X,X1,Z),
-    not(member(piece(_,_,X,Z),Board)),!.
+    not(member(piece(_,_,Z,Y),Board)),!.
 
 %rules for knight
-canPieceMoveTo(piece(_, knight, X, Y),Board, X1, Y1):-
+canPieceMoveTo(piece(_, knight, X, Y),_, X1, Y1):-
     abs(X - X1) = 2, abs(Y - Y1) = 1.
-canPieceMoveTo(piece(_, knight, X, Y),Board, X1, Y1):-
+canPieceMoveTo(piece(_, knight, X, Y),_, X1, Y1):-
     abs(X - X1) = 1, abs(Y - Y1) = 2.
 
 %rules for bishop
@@ -48,35 +58,44 @@ canPieceMoveTo(piece(_, bishop, X, Y),Board, X1, Y1):-
 
 %rules for queen
 canPieceMoveTo(piece(_, queen, X, Y),Board, X1, Y1):-
-    abs(X - X1) = abs(Y - Y1).
+    abs(X - X1) = abs(Y - Y1),
+    pieceBetween(X,Y,X1,Y1,Board).
 canPieceMoveTo(piece(_, queen, X, Y),Board, X1, Y1):-
-    X = X1.
+    X = X1,
+    between(Y,Y1,Z),
+    not(member(piece(_,_,X,Z),Board)),!.
     
 canPieceMoveTo(piece(_, queen, X ,Y),Board, X1, Y1):-
     Y = Y1,
     between(X,X1,Z),
-    not(member(piece(_,_,X,Z),Board)),!.
+    not(member(piece(_,_,Z,Y),Board)),!.
     
 
 %rules for pawn
+canPieceMoveTo(piece(white, pawn, X, 2),Board, X1, Y1):-
+    X = X1, Y1 = 4,
+    not(member(piece(black, _, X1, Y1), Board)).
+
 canPieceMoveTo(piece(white, pawn, X, Y),Board, X1, Y1):-
-    X = X1, Y1 - Y = 1.
+    X = X1, Y1 - Y = 1,
+    not(member(piece(black, _, X1, Y1), Board)).
+
 canPieceMoveTo(piece(black, pawn, X, Y),Board, X1, Y1):-
-    X = X1, Y - Y1 = 1.
-canPieceMoveTo(piece(Color, pawn, X, Y),Board, X1, Y1):-
-    not(member(piece(Color, _, X1, Y1), Board)),member(piece(_,_,X1,Y1),Board).
+    X = X1, Y - Y1 = 1,
+    not(member(piece(white, _, X1, Y1), Board)).
+
+canPieceMoveTo(piece(black, pawn, X, 7),Board, X1, Y1):-
+    not(member(piece(white, _, X1, Y1), Board)),
+    X = X1, Y1 = 5.
+
+canPieceMoveTo(piece(Color, pawn, _, _),Board, X1, Y1):-
+    opponent(Color,OppColor),
+    not(member(piece(OppColor, _, X1, Y1), Board)),member(piece(_,_,X1,Y1),Board).
 
 %rules for king
-canPieceMoveTo(piece(white,king,X,Y),Board,X1,Y1):-
-    not(canPieceMoveTo(piece(black,_,_,_),Board,X1,Y1)),
-    abs(X-X1)=1.
-canPieceMoveTo(piece(white,king,X,Y),Board,X1,Y1):-
-    not(canPieceMoveTo(piece(black,_,_,_),Board,X1,Y1)),
-    abs(Y-Y1)=1.
+canPieceMoveTo(piece(Color,king,X,Y),Board,X1,Y1):-
+    opponent(Color,OppColor),
+    not(can_move(OppColor,piece(OppColor,_,_,_),Board,X1,Y1)),
+    abs(X-X1)=<1,
+    abs(Y-Y1)=<1.
 
-canPieceMoveTo(piece(black,king,X,Y),Board,X1,Y1):-
-    not(canPieceMoveTo(piece(white,_,_,_),Board,X1,Y1)),
-    abs(X-X1)=1.
-canPieceMoveTo(piece(black,king,X,Y),Board,X1,Y1):-
-    not(canPieceMoveTo(piece(white,_,_,_),Board,X1,Y1)),
-    abs(Y-Y1)=1.
