@@ -25,6 +25,7 @@ check_check(Board,PlayerColor):-
 %TODO: Для ферзя добавить проверку не стоит ли на проходе другая фигура
 %TODO: Для пешки логику боя на проходе задать
 %TODO: Для пешки логику первого хода задать(на два пля вперед)
+%TODO: Изменить все ABS (как в коне)
 
 %TODO: Добавить предикат проверки наличия фигур между двумя полями
 % \/ - Это он внизу(Для слонов, не уверен, что работает)
@@ -47,9 +48,9 @@ canPieceMoveTo(piece(_, rook, X, Y),Board, X1, Y1):-
 
 %rules for knight
 canPieceMoveTo(piece(_, knight, X, Y),_, X1, Y1):-
-    abs(X - X1) = 2, abs(Y - Y1) = 1.
+    Ax is abs(X - X1), Ax = 2, Ay is abs(Y - Y1), Ay = 1.
 canPieceMoveTo(piece(_, knight, X, Y),_, X1, Y1):-
-    abs(X - X1) = 1, abs(Y - Y1) = 2.
+    Ax is abs(X - X1), Ax= 1, Ay is abs(Y - Y1), Ay = 2.
 
 %rules for bishop
 canPieceMoveTo(piece(_, bishop, X, Y),Board, X1, Y1):-
