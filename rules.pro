@@ -29,11 +29,12 @@ check_check(Board,PlayerColor):-
 %TODO: Добавить предикат проверки наличия фигур между двумя полями
 % \/ - Это он внизу(Для слонов, уверен, что не работает)
 
-pieceBetween(X,Y,X,Y,_).
-
+pieceBetween(X,Y,X,Y,_):-!.
 pieceBetween(X,Y,X1,Y1, Board):-
-    member(piece(_,_,X+1,Y+1),Board),!,
-    pieceBetween(X+1,Y+1,X1,Y1, Board).
+    not(member(piece(_,_,X+1,Y+1),Board)),!,
+    Xn is X+1,
+    Yn is Y+1,
+    pieceBetween(Xn,Yn,X1,Y1, Board).
 
 %rules for rook
 canPieceMoveTo(piece(_, rook, X, Y),Board, X1, Y1):-
