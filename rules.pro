@@ -19,7 +19,7 @@ vacant(Color,X, Y, Board):-
 check_check(Board,PlayerColor):- 
     member(piece(PlayerColor, king, X,Y),Board),
     opponent(PlayerColor,OpponentColor),
-    can_move(PlayerColor,piece(OpponentColor,_,_,_),Board,X,Y).
+    can_move(PlayerColor,piece(OpponentColor,_,_,_),Board,X,Y), write("Шах!").
 
 %TODO: Для ферзя добавить проверку не стоит ли на проходе другая фигура
 %TODO: Для пешки логику боя на проходе задать

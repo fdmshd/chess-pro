@@ -5,17 +5,18 @@ initialize_board():-
     draw_board(Board),
     play(Board,white).
 
+read_move(Name,X,Y,X1,Y1):-
+  write("Введите ход в формате 'hg1f3': "),
+  read(M),
+  atom_chars(M,[Pname,Px,Py,Px1,Py1]),
+  letter(Name,Pname),
+  atom_int(Py,Y),
+  atom_int(Py1,Y1),
+  coord(Px,X),
+  coord(Px1,X1).
+
 play(Board, Color):-
-  write("Введите имя фигуры :"),
-  read(Name),
-  write("Введите координату X фигуры :"),
-  read(X),
-  write("Введите координату Y фигуры :"),
-  read(Y),
-  write("Введите новую координату X фигуры :"),
-  read(X1),
-  write("Введите новую координату Y фигуры :"),
-  read(Y1),
+  read_move(Name,X,Y,X1,Y1),
   do_move(Color,piece(Color, Name,X,Y),Board,X1,Y1,NewBoard),
   draw_board(NewBoard),
   opponent(Color,OppColor),
@@ -63,9 +64,26 @@ draw_piece_on_board(X, Y, Board) :-
     ;
     write('_')
   ).
+
 letter(rook,r).
 letter(knight,h).
 letter(bishop,b).
 letter(queen,q).
 letter(king,k).
 letter(pawn,p).
+coord(h,1).
+coord(g,2).
+coord(f,3).
+coord(e,4).
+coord(d,5).
+coord(c,6).
+coord(b,7).
+coord(a,8).
+atom_int('1',1).
+atom_int('2',2).
+atom_int('3',3).
+atom_int('4',4).
+atom_int('5',5).
+atom_int('6',6).
+atom_int('7',7).
+atom_int('8',8).
