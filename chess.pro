@@ -16,11 +16,13 @@ read_move(Name,X,Y,X1,Y1):-
   coord(Px1,X1).
 
 play(Board, Color):-
+  repeat,
   read_move(Name,X,Y,X1,Y1),
   do_move(Color,piece(Color, Name,X,Y),Board,X1,Y1,NewBoard),
   draw_board(NewBoard),
   opponent(Color,OppColor),
   play(NewBoard,OppColor).
+
 
 do_move(PlayerC,piece(Color, Name, X, Y), Board, X1, Y1, NewBoard):-
   can_move(PlayerC,piece(Color, Name, X, Y), Board, X1, Y1),
