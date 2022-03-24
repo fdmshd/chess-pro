@@ -19,21 +19,72 @@ vacant(Color,X, Y, Board):-
 check_check(Board,PlayerColor):- 
     member(piece(PlayerColor, king, X,Y),Board),
     opponent(PlayerColor,OpponentColor),
-    can_move(PlayerColor,piece(OpponentColor,_,_,_),Board,X,Y), write("Шах!").
+    can_move(OpponentColor,piece(OpponentColor,_,_,_),Board,X,Y), write("Шах!").
 
-%TODO: Для ферзя добавить проверку не стоит ли на проходе другая фигура
+%TODO: Для ферзя и ладьи исправить проверку не стоит ли на проходе другая фигура
 %TODO: Для пешки логику боя на проходе задать
-%TODO: Для пешки логику первого хода задать(на два поля вперед)
-%TODO: Изменить все ABS (как в коне)
+%TODO: Для пешки логику боя задать
 
-%TODO: Добавить предикат проверки наличия фигур между двумя полями
-% \/ - Это он внизу(Для слонов, уверен, что не работает)
+% \/ - Предикат для проверки хода по диагонали
+check_diagonal(X,Y,X1,Y1,Board):-
+    X1>X,
+    Y1>Y,
+    Xn is X+1,
+    Yn is Y+1,
+    pieceBetween(Xn,Yn,X1,Y1, Board).
+
+check_diagonal(X,Y,X1,Y1,Board):-
+    X1<X,
+    Y1>Y,
+    Xn is X-1,
+    Yn is Y+1,
+    pieceBetween(Xn,Yn,X1,Y1, Board).
+
+check_diagonal(X,Y,X1,Y1,Board):-
+    X1>X,
+    Y1<Y,
+    Xn is X+1,
+    Yn is Y-1,
+    pieceBetween(Xn,Yn,X1,Y1, Board).
+
+check_diagonal(X,Y,X1,Y1,Board):-
+    X1<X,
+    Y1<Y,
+    Xn is X-1,
+    Yn is Y-1,
+    pieceBetween(Xn,Yn,X1,Y1, Board).
 
 pieceBetween(X,Y,X,Y,_):-!.
 pieceBetween(X,Y,X1,Y1, Board):-
-    not(member(piece(_,_,X+1,Y+1),Board)),!,
+    X1>X,
+    Y1>Y,
+    not(member(piece(_,_,X,Y),Board)),!,
     Xn is X+1,
     Yn is Y+1,
+    pieceBetween(Xn,Yn,X1,Y1, Board).
+
+pieceBetween(X,Y,X1,Y1, Board):-
+    X1<X,
+    Y1>Y,
+    not(member(piece(_,_,X,Y),Board)),!,
+    Xn is X-1,
+    Yn is Y+1,
+    pieceBetween(Xn,Yn,X1,Y1, Board).
+
+pieceBetween(X,Y,X1,Y1, Board):-
+    X1>X,
+    Y1<Y,
+    not(member(piece(_,_,X,Y),Board)),!,
+    Xn is X+1,
+    Yn is Y-1,
+    pieceBetween(Xn,Yn,X1,Y1, Board).
+
+pieceBetween(X,Y,X1,Y1, Board):-
+    X1<X,
+    Y1<Y,
+    not(member(piece(_,_,X,Y),Board)),!,
+    Xn is X-1,
+    Yn is Y-1,
     pieceBetween(Xn,Yn,X1,Y1, Board).
 
 %rules for rook
@@ -58,17 +109,17 @@ canPieceMoveTo(piece(_, bishop, X, Y),Board, X1, Y1):-
     Ax is abs(X - X1),
     Ay is abs(Y - Y1),
     Ax=Ay,
-    pieceBetween(X,Y,X1,Y1, Board).
+    check_diagonal(X,Y,X1,Y1, Board).
 
 %rules for queen
 canPieceMoveTo(piece(_, queen, X, Y),Board, X1, Y1):-
     Ax is abs(X - X1),
     Ay is abs(Y - Y1),
     Ax=Ay,
-    pieceBetween(X,Y,X1,Y1,Board).
+    check_diagonal(X,Y,X1,Y1,Board),!.
 canPieceMoveTo(piece(_, queen, X, Y),Board, X1, Y1):-
     X = X1,
-    between(Y,Y1,Z),
+    between(Y,Y1,Z),!,
     not(member(piece(_,_,X,Z),Board)),!.
     
 canPieceMoveTo(piece(_, queen, X ,Y),Board, X1, Y1):-
@@ -80,18 +131,20 @@ canPieceMoveTo(piece(_, queen, X ,Y),Board, X1, Y1):-
 %rules for pawn
 canPieceMoveTo(piece(white, pawn, X, 2),Board, X1, Y1):-
     X = X1, Y1 = 4,
-    not(member(piece(black, _, X1, Y1), Board)).
+    not(member(piece(_, _, X1, 3), Board)),
+    not(member(piece(_, _, X1, Y1), Board)).
 
 canPieceMoveTo(piece(white, pawn, X, Y),Board, X1, Y1):-
-    X = X1, Y1 - Y = 1,
-    not(member(piece(black, _, X1, Y1), Board)).
+    X = X1, Yn is Y1 - Y, Yn = 1,
+    not(member(piece(_, _, X1, Y1), Board)).
 
 canPieceMoveTo(piece(black, pawn, X, Y),Board, X1, Y1):-
-    X = X1, Y - Y1 = 1,
-    not(member(piece(white, _, X1, Y1), Board)).
+    X = X1, Yn is Y - Y1, Yn = 1,
+    not(member(piece(_, _, X1, Y1), Board)).
 
 canPieceMoveTo(piece(black, pawn, X, 7),Board, X1, Y1):-
-    not(member(piece(white, _, X1, Y1), Board)),
+    not(member(piece(_, _, X1, 6), Board)),
+    not(member(piece(_, _, X1, Y1), Board)),
     X = X1, Y1 = 5.
 
 canPieceMoveTo(piece(Color, pawn, _, _),Board, X1, Y1):-
