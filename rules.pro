@@ -23,9 +23,7 @@ check_check(Board,PlayerColor):-
 
 %TODO: Логику рокировки
 %TODO: Логику провода пешек
-%TODO: Для ферзя и ладьи исправить проверку не стоит ли на проходе другая фигура
 %TODO: Для пешки логику боя на проходе задать
-%TODO: Для пешки логику боя задать
 
 % \/ - Предикаты для проверки хода по диагонали
 check_diagonal(X,Y,X1,Y1,Board):-
@@ -163,9 +161,17 @@ canPieceMoveTo(piece(white, pawn, X, Y),Board, X1, Y1):-
     X = X1, Yn is Y1 - Y, Yn = 1,
     not(member(piece(_, _, X1, Y1), Board)).
 
+canPieceMoveTo(piece(white, pawn, X, Y),Board, X1, Y1):-
+    Xn is abs(X - X1),Xn = 1, Yn is Y1 - Y, Yn = 1,
+    member(piece(black, _, X1, Y1), Board).
+
 canPieceMoveTo(piece(black, pawn, X, Y),Board, X1, Y1):-
     X = X1, Yn is Y - Y1, Yn = 1,
     not(member(piece(_, _, X1, Y1), Board)).
+
+canPieceMoveTo(piece(black, pawn, X, Y),Board, X1, Y1):-
+    Xn is abs(X - X1), Xn = 1, Yn is Y - Y1, Yn = 1,
+    member(piece(white, _, X1, Y1), Board).
 
 canPieceMoveTo(piece(black, pawn, X, 7),Board, X1, Y1):-
     not(member(piece(_, _, X1, 6), Board)),
