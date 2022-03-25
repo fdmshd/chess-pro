@@ -25,6 +25,14 @@ play(Board, Color):-
   %check_check(Board,OppColor),
   play(NewBoard,OppColor).
 
+%Условия для длинной рокировки
+do_move(piece(Color,king,4,Y), Board,6,Y, NewBoard):-
+  delete(Board,piece(Color, king, 4, Y),  PreBoard),
+  delete(PreBoard,piece(Color,rook, 8,Y), PreBoard1 ),
+  append(PreBoard1,[piece(Color, rook, 5, Y)],PreBoard2),
+  append(PreBoard2,[piece(Color, king, 6, Y)],NewBoard),!.
+
+%Условия для короткой рокировки
 do_move(piece(Color,king,4,Y), Board,2,Y, NewBoard):-
   delete(Board,piece(Color, king, 4, Y),  PreBoard),
   delete(PreBoard,piece(Color,rook, 1,Y), PreBoard1 ),

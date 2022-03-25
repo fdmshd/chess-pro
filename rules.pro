@@ -192,6 +192,14 @@ canPieceMoveTo(piece(white,king,4,1), Board, 2, 1):-
     member(piece(white, rook, 1,1),Board),
     check_l(4,1,2,1,Board).
 
+canPieceMoveTo(piece(white,king,4,1), Board, 6, 1):-
+    member(piece(white, rook, 8,1),Board),
+    check_l(4,1,8,1,Board).
+
 canPieceMoveTo(piece(black,king,4,8), Board, 2, 8):-
     member(piece(black, rook, 1,8),Board),
     check_l(4,8,2,8,Board).
+
+canPieceMoveTo(piece(black,king,4,8), Board, 6, 8):-
+    member(piece(black, rook, 8,8),Board),
+    check_l(4,8,8,8,Board).
