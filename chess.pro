@@ -1,7 +1,7 @@
 ?-['initial.pro'].
 ?-['rules.pro'].
 initialize_board():-
-    findall(Piece, initial(Piece), Board),
+    findall(Piece, initial1(Piece), Board),
     draw_board(Board),
     play(Board,white).
 
@@ -18,14 +18,20 @@ read_move(Name,X,Y,X1,Y1):-
 play(Board, Color):-
   repeat,
   read_move(Name,X,Y,X1,Y1),
-  do_move(Color,piece(Color, Name,X,Y),Board,X1,Y1,NewBoard),
+  can_move(Color,piece(Color, Name, X, Y), Board, X1, Y1),
+  do_move(piece(Color, Name,X,Y),Board,X1,Y1,NewBoard),
   draw_board(NewBoard),
   opponent(Color,OppColor),
+  %check_check(Board,OppColor),
   play(NewBoard,OppColor).
 
+do_move(piece(Color,king,4,Y), Board,2,Y, NewBoard):-
+  delete(Board,piece(Color, king, 4, Y),  PreBoard),
+  delete(PreBoard,piece(Color,rook, 1,Y), PreBoard1 ),
+  append(PreBoard1,[piece(Color, rook, 3, Y)],PreBoard2),
+  append(PreBoard2,[piece(Color, king, 2, Y)],NewBoard),!.
 
-do_move(PlayerC,piece(Color, Name, X, Y), Board, X1, Y1, NewBoard):-
-  can_move(PlayerC,piece(Color, Name, X, Y), Board, X1, Y1),
+do_move(piece(Color, Name, X, Y), Board, X1, Y1, NewBoard):-
   delete(Board,piece(Color, Name, X, Y),  PreBoard),
   delete(PreBoard,piece(_,_, X1,Y1), PreBoard1 ),
   append(PreBoard1,[piece(Color, Name, X1, Y1)],NewBoard).

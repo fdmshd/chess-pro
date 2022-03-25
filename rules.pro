@@ -24,6 +24,7 @@ check_check(Board,PlayerColor):-
 %TODO: Логику рокировки
 %TODO: Логику провода пешек
 %TODO: Для пешки логику боя на проходе задать
+%TODO: При проверке не ходит ли король под шах, происходит бесконечная рекурсия. ИСПРАВИТЬ
 
 % \/ - Предикаты для проверки хода по диагонали
 check_diagonal(X,Y,X1,Y1,Board):-
@@ -104,7 +105,7 @@ check_l(X,Y,X1,Y1, Board):-
     check_horizontal1(Xn,Y,X1,Y1, Board).
 
 check_l(X,Y,X1,Y1, Board):-
-    Y = Y1, X1 > X,
+    Y = Y1, X1 < X,
     Xn is X - 1,
     check_horizontal2(Xn,Y,X1,Y1, Board).
 
@@ -187,3 +188,10 @@ canPieceMoveTo(piece(Color,king,X,Y),Board,X1,Y1):-
     Ay is abs(Y-Y1),
     Ay=<1.
 
+canPieceMoveTo(piece(white,king,4,1), Board, 2, 1):-
+    member(piece(white, rook, 1,1),Board),
+    check_l(4,1,2,1,Board).
+
+canPieceMoveTo(piece(black,king,4,8), Board, 2, 8):-
+    member(piece(black, rook, 1,8),Board),
+    check_l(4,8,2,8,Board).
