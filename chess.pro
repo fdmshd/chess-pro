@@ -60,9 +60,14 @@ draw_piece(X, Y, Board) :-
   write('.').
   
 draw_piece_on_board(X, Y, Board) :-
-  ( member(piece(_, Which, X, Y), Board) ->
+  member(piece(white, Which, X, Y), Board),
+  letter(Which, Letter),
+  write(Letter).
+
+draw_piece_on_board(X, Y, Board) :-
+  ( member(piece(black, Which, X, Y), Board) ->
     letter(Which, Letter),
-    write(Letter)
+    ansi_format([bold,fg(black)],'~w', Letter)
     ;
     write('_')
   ).

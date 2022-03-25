@@ -21,6 +21,8 @@ check_check(Board,PlayerColor):-
     opponent(PlayerColor,OpponentColor),
     can_move(OpponentColor,piece(OpponentColor,_,_,_),Board,X,Y), write("Шах!").
 
+%TODO: Логику рокировки
+%TODO: Логику провода пешек
 %TODO: Для ферзя и ладьи исправить проверку не стоит ли на проходе другая фигура
 %TODO: Для пешки логику боя на проходе задать
 %TODO: Для пешки логику боя задать
