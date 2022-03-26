@@ -182,7 +182,7 @@ canPieceMoveTo(piece(black, pawn, X, 7),Board, X1, Y1):-
 %rules for king
 canPieceMoveTo(piece(Color,king,X,Y),Board,X1,Y1):-
     opponent(Color,OppColor),
-    not(can_move(OppColor,piece(OppColor,_,_,_),Board,X1,Y1)),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,X1,Y1)),
     Ax is abs(X-X1),
     Ax=<1,
     Ay is abs(Y-Y1),
@@ -203,3 +203,39 @@ canPieceMoveTo(piece(black,king,4,8), Board, 2, 8):-
 canPieceMoveTo(piece(black,king,4,8), Board, 6, 8):-
     member(piece(black, rook, 8,8),Board),
     check_l(4,8,8,8,Board).
+
+%\/Блок для правил описывающих куда фигура бьет.
+
+piece_can_beat(piece(OppColor,Name,X,Y),Board,X1,Y1):-
+    member(piece(Color,Name,X,Y),Board),
+    piece_beats(piece(OppColor,Name,X,Y),Board,X1,Y1).
+
+%Для пешек
+piece_beats(piece(white,pawn,X,Y), _, X1,Y1):-
+    Xn is abs(X - X1),Xn = 1, Yn is Y1 - Y, Yn = 1.
+
+piece_beats(piece(black,pawn,X,Y), _, X1,Y1):-
+    Xn is abs(X - X1), Xn = 1, Yn is Y - Y1, Yn = 1.
+
+%Для короля
+piece_beats(piece(_,king,X,Y),_,X1,Y1):-
+    Ax is abs(X-X1),
+    Ax=<1,
+    Ay is abs(Y-Y1),
+    Ay=<1.
+
+%Для ферзя
+piece_beats(piece(_, queen, X, Y),Board, X1, Y1):-
+    canPieceMoveTo(piece(_, queen, X, Y),Board, X1, Y1).
+
+%Для слона.
+piece_beats(piece(_, bishop, X, Y),Board, X1, Y1):-
+    canPieceMoveTo(piece(_, bishop, X, Y),Board, X1, Y1).
+
+%Для коня.
+piece_beats(piece(_, knight, X, Y),Board, X1, Y1):-
+    canPieceMoveTo(piece(_, knight, X, Y),Board, X1, Y1).
+
+%Для ладьи
+piece_beats(piece(_,rook,X,Y), Board, X1,Y1):-
+    check_l(X,Y,X1,Y1,Board).
