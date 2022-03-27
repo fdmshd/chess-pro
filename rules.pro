@@ -5,21 +5,29 @@ can_move(PlayerC,piece(Color, Name, X, Y), Board, X1, Y1):-
     PlayerC = Color,
     vacant(Color,X1,Y1,Board),
     member(piece(Color,Name,X,Y),Board),
-    canPieceMoveTo(piece(Color,Name,X,Y),Board, X1,Y1).
+    canPieceMoveTo(piece(Color,Name,X,Y),Board, X1,Y1),
+    premove(piece(Color,Name,X,Y), Board, X1,Y1,NewBoard),
+    check_check(NewBoard, Color).
 
 vacant(Color,X, Y, Board):- 
     between(1, 8, Y),
     between(1, 8, X),
     not(member(piece(Color, _, X, Y), Board)).
 
+%TODO: \/Добавить предикат для временного хода.
+premove(piece(Color, Name, X, Y), Board, X1, Y1, NewBoard):-
+    delete(Board,piece(Color, Name, X, Y),  PreBoard),
+    delete(PreBoard,piece(_,_, X1,Y1), PreBoard1 ),
+    append(PreBoard1,[piece(Color, Name, X1, Y1)],NewBoard).
+
 %TODO:проверить не связана ли фигура
 %check_pin(piece(Color,Name,X,Y), X1,Y1):- .
 
-%проверить случился ли шах
+%проверить случится ли шах
 check_check(Board,PlayerColor):- 
     member(piece(PlayerColor, king, X,Y),Board),
     opponent(PlayerColor,OpponentColor),
-    can_move(OpponentColor,piece(OpponentColor,_,_,_),Board,X,Y), write("Шах!").
+    not(piece_can_beat(piece(OpponentColor,_,_,_),Board,X,Y)).
 
 %TODO: Логику рокировки
 %TODO: Логику провода пешек
