@@ -1,7 +1,7 @@
 ?-['initial.pro'].
 ?-['rules.pro'].
 initialize_board():-
-    findall(Piece, initial(Piece), Board),
+    findall(Piece, initial1(Piece), Board),
     draw_board(Board),
     play(Board,white).
 

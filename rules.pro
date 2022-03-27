@@ -190,25 +190,44 @@ canPieceMoveTo(piece(Color,king,X,Y),Board,X1,Y1):-
 
 canPieceMoveTo(piece(white,king,4,1), Board, 2, 1):-
     member(piece(white, rook, 1,1),Board),
-    check_l(4,1,2,1,Board).
+    check_l(4,1,2,1,Board),
+    opponent(white,OppColor),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,2,1)),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,3,1)),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,4,1)).
 
 canPieceMoveTo(piece(white,king,4,1), Board, 6, 1):-
     member(piece(white, rook, 8,1),Board),
-    check_l(4,1,8,1,Board).
+    check_l(4,1,8,1,Board),
+    opponent(white,OppColor),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,4,1)),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,5,1)),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,6,1)).
+    
 
 canPieceMoveTo(piece(black,king,4,8), Board, 2, 8):-
     member(piece(black, rook, 1,8),Board),
-    check_l(4,8,2,8,Board).
+    check_l(4,8,2,8,Board),
+    opponent(black,OppColor),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,2,8)),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,3,8)),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,4,8)).
+    
 
 canPieceMoveTo(piece(black,king,4,8), Board, 6, 8):-
     member(piece(black, rook, 8,8),Board),
-    check_l(4,8,8,8,Board).
+    check_l(4,8,8,8,Board),
+    opponent(black,OppColor),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,4,8)),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,5,8)),
+    not(piece_can_beat(piece(OppColor,_,_,_),Board,6,8)).
+    
 
 %\/Блок для правил описывающих куда фигура бьет.
 
-piece_can_beat(piece(OppColor,Name,X,Y),Board,X1,Y1):-
+piece_can_beat(piece(Color,Name,X,Y),Board,X1,Y1):-
     member(piece(Color,Name,X,Y),Board),
-    piece_beats(piece(OppColor,Name,X,Y),Board,X1,Y1).
+    piece_beats(piece(Color,Name,X,Y),Board,X1,Y1).
 
 %Для пешек
 piece_beats(piece(white,pawn,X,Y), _, X1,Y1):-
