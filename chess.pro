@@ -22,8 +22,10 @@ play(Board, Color):-
   do_move(piece(Color, Name,X,Y),Board,X1,Y1,NewBoard),
   draw_board(NewBoard),
   opponent(Color,OppColor),
-  %check_check(Board,OppColor),
-  play(NewBoard,OppColor).
+  (check_check(NewBoard,OppColor)->play(NewBoard,OppColor)
+  ;writeln("Шах!!!"), play(Board, Color)
+  ).
+
 
 %Условия для длинной рокировки
 do_move(piece(Color,king,4,Y), Board,6,Y, NewBoard):-

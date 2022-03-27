@@ -14,25 +14,20 @@ vacant(Color,X, Y, Board):-
     between(1, 8, X),
     not(member(piece(Color, _, X, Y), Board)).
 
-%TODO: \/Добавить предикат для временного хода.
+%Предикат для временного хода.
 premove(piece(Color, Name, X, Y), Board, X1, Y1, NewBoard):-
     delete(Board,piece(Color, Name, X, Y),  PreBoard),
     delete(PreBoard,piece(_,_, X1,Y1), PreBoard1 ),
     append(PreBoard1,[piece(Color, Name, X1, Y1)],NewBoard).
 
-%TODO:проверить не связана ли фигура
-%check_pin(piece(Color,Name,X,Y), X1,Y1):- .
-
-%проверить случится ли шах
+%проверить не случится ли шах
 check_check(Board,PlayerColor):- 
     member(piece(PlayerColor, king, X,Y),Board),
     opponent(PlayerColor,OpponentColor),
     not(piece_can_beat(piece(OpponentColor,_,_,_),Board,X,Y)).
 
-%TODO: Логику рокировки
 %TODO: Логику провода пешек
 %TODO: Для пешки логику боя на проходе задать
-%TODO: При проверке не ходит ли король под шах, происходит бесконечная рекурсия. ИСПРАВИТЬ
 
 % \/ - Предикаты для проверки хода по диагонали
 check_diagonal(X,Y,X1,Y1,Board):-
