@@ -33,9 +33,6 @@ check_checkmate(Board,Color):-
     premove(piece(Color,Name,X,Y), Board, X1,Y1,NewBoard),
     check_check(NewBoard, Color).
 
-
-%TODO: Логику провода пешек
-%TODO: Память фигур добавить для проверки возможности рокировки
 % \/ - Предикаты для проверки хода по диагонали
 check_diagonal(X,Y,X1,Y1,Board):-
     X1>X,

@@ -31,6 +31,27 @@ play(Board, Color):-
   writeln("И мат!!!")
   ).
 
+promotion(NewPiece):-
+  repeat,
+  writeln("Введите новую фигуру(queen;knight;rook;bishop): "),
+  read(NewPiece),
+  (NewPiece = queen;NewPiece = knight;NewPiece = rook;NewPiece = bishop).
+
+
+%Условия для провода пешки (белой)
+do_move(piece(white,pawn,X,7),Board,X1,8,NewBoard):-
+  delete(Board,piece(black, _, X1, 8),  PreBoard),
+  delete(PreBoard,piece(white, pawn, X, 7),  PreBoard1),
+  promotion(NewPiece),
+  append(PreBoard1,[piece(white, NewPiece, X1, 8)],NewBoard),!.
+
+%Условия для провода пешки (черной)
+do_move(piece(black,pawn,X,2),Board,X1,1,NewBoard):-
+  delete(Board,piece(white, _, X1, 1),  PreBoard),
+  delete(PreBoard,piece(black, pawn, X, 2),  PreBoard1),
+  promotion(NewPiece),
+  append(PreBoard1,[piece(white, NewPiece, X1, 1)],NewBoard),!.
+
 %Условия для боя на проходе
 do_move(piece(white,pawn,X,5), Board,X1,6, NewBoard):-
   member(last_move(piece(black,pawn, X1, 7),X1, 5),Board),
