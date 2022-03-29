@@ -26,9 +26,11 @@ check_check(Board,PlayerColor):-
     opponent(PlayerColor,OpponentColor),
     not(piece_can_beat(piece(OpponentColor,_,_,_),Board,X,Y)).
 
+%TODO: Предикат для проверки мата задать
 %TODO: Логику провода пешек
 %TODO: Для пешки логику боя на проходе задать
-
+%TODO: Память фигур добавить для проверки возможности рокировки
+%TODO: Последний ход записывать для проверки боя на проходе
 % \/ - Предикаты для проверки хода по диагонали
 check_diagonal(X,Y,X1,Y1,Board):-
     X1>X,
@@ -95,38 +97,38 @@ pieceBetween(X,Y,X1,Y1, Board):-
 check_l(X,Y,X1,Y1, Board):-
     X = X1,Y1>Y,
     Yn is Y +1,
-    check_vertical1(X,Yn,X1,Y1, Board).
+    not(check_vertical1(X,Yn,X1,Y1, Board)).
 
 check_l(X,Y,X1,Y1, Board):-
     X = X1,Y1<Y,
     Yn is Y - 1,
-    check_vertical2(X,Yn,X1,Y1, Board).
+    not(check_vertical2(X,Yn,X1,Y1, Board)).
 
 check_l(X,Y,X1,Y1, Board):-
     Y = Y1, X1 > X,
     Xn is X +1,
-    check_horizontal1(Xn,Y,X1,Y1, Board).
+    not(check_horizontal1(Xn,Y,X1,Y1, Board)).
 
 check_l(X,Y,X1,Y1, Board):-
     Y = Y1, X1 < X,
     Xn is X - 1,
-    check_horizontal2(Xn,Y,X1,Y1, Board).
+    not(check_horizontal2(Xn,Y,X1,Y1, Board)).
 
 check_horizontal1(X,Y,X1,Y, Board):-
-    between(X,X1,Z),!,
-    not(member(piece(_,_,Z,Y),Board)),!.
+    between(X,X1,Z),
+    member(piece(_,_,Z,Y),Board),!.
 
 check_horizontal2(X,Y,X1,Y, Board):-
-    between(X1,X,Z),!,
-    not(member(piece(_,_,Z,Y),Board)),!.
+    between(X1,X,Z),
+    member(piece(_,_,Z,Y),Board),!.
 
 check_vertical1(X,Y,X,Y1, Board):-
-    between(Y,Y1,Z),!,
-    not(member(piece(_,_,X,Z),Board)),!.
+    between(Y,Y1,Z),
+    member(piece(_,_,X,Z),Board),!.
 
 check_vertical2(X,Y,X,Y1, Board):-
-    between(Y1,Y,Z),!,
-    not(member(piece(_,_,X,Z),Board)),!.
+    between(Y1,Y,Z),
+    member(piece(_,_,X,Z),Board),!.
 
 %rules for rook
 canPieceMoveTo(piece(_, rook, X, Y),Board, X1, Y1):-
@@ -261,3 +263,80 @@ piece_beats(piece(_, knight, X, Y),Board, X1, Y1):-
 %Для ладьи
 piece_beats(piece(_,rook,X,Y), Board, X1,Y1):-
     check_l(X,Y,X1,Y1,Board).
+
+%Предикаты для возврата возможных ходов для фигуры
+
+%Возможные ходы для короля
+possible_moves(piece(Color,king,X,Y),Board, N_X,N_Y):-
+    (
+        N_X is X + 1, N_Y is Y + 1;
+        N_X is X + 1, N_Y is Y;
+        N_X is X + 1, N_Y is Y - 1;
+        N_X is X - 1, N_Y is Y + 1;
+        N_X is X - 1, N_Y is Y;
+        N_X is X - 1, N_Y is Y - 1;
+        N_X is X, N_Y is Y + 1;
+        N_X is X, N_Y is Y - 1
+    ),
+    can_move(Color,piece(Color,king, X,Y),Board, N_X,N_Y).
+
+%TODO:Возможные ходы ферзя
+possible_moves(piece(Color,queen,X,Y),Board, N_X,N_Y):-
+    between(1,7, Shift),
+    (
+        N_X is X+Shift, N_Y is Y+Shift;
+        N_X is X+Shift, N_Y is Y-Shift;
+        N_X is X-Shift, N_Y is Y+Shift;
+        N_X is X-Shift, N_Y is Y-Shift;
+        N_X is X, N_Y is Y-Shift;
+        N_X is X, N_Y is Y+Shift;
+        N_X is X-Shift, N_Y is Y;
+        N_X is X+Shift, N_Y is Y
+    ),
+    can_move(Color,piece(Color,queen, X,Y),Board, N_X,N_Y).
+
+%Возможные ходы ладьи
+possible_moves(piece(Color,rook,X,Y),Board, N_X,N_Y):-
+    between(1,8,N_X),
+    between(1,8,N_Y),
+    (X = N_X; Y = N_Y),
+    can_move(Color,piece(Color,rook, X,Y),Board, N_X,N_Y).
+
+%Возможные ходы коня
+possible_moves(piece(Color,knight,X,Y),Board, N_X,N_Y):-
+    (
+        N_X is X + 1, N_Y is Y + 2;
+        N_X is X - 1, N_Y is Y + 2;
+        N_X is X + 1, N_Y is Y - 2;
+        N_X is X - 1, N_Y is Y - 2;
+        N_X is X + 2, N_Y is Y + 1;
+        N_X is X - 2, N_Y is Y + 1;
+        N_X is X + 2, N_Y is Y - 1;
+        N_X is X - 2, N_Y is Y - 1
+    ),
+    can_move(Color,piece(Color,knight, X,Y),Board, N_X,N_Y).
+
+%Возможные ходы пешки
+possible_moves(piece(Color,pawn,X,Y),Board, N_X,N_Y):-
+    (
+        N_X is X + 1, N_Y is Y + 1;
+        N_X is X - 1, N_Y is Y + 1;
+        N_X is X, N_Y is Y + 2;
+        N_X is X, N_Y is Y + 1;
+        N_X is X + 1, N_Y is Y - 1;
+        N_X is X - 1, N_Y is Y - 1;
+        N_X is X, N_Y is Y - 2;
+        N_X is X, N_Y is Y - 1
+    ),
+    can_move(Color,piece(Color,pawn, X,Y),Board, N_X,N_Y).
+
+%Возможные ходы слона
+possible_moves(piece(Color,bishop,X,Y),Board, N_X,N_Y):-
+    between(1,7, Shift),
+    (
+        N_X is X+Shift, N_Y is Y+Shift;
+        N_X is X+Shift, N_Y is Y-Shift;
+        N_X is X-Shift, N_Y is Y+Shift;
+        N_X is X-Shift, N_Y is Y-Shift
+    ),
+    can_move(Color,piece(Color,bishop, X,Y),Board, N_X,N_Y).
