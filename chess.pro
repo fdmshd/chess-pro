@@ -23,7 +23,10 @@ play(Board, Color):-
   draw_board(NewBoard),
   opponent(Color,OppColor),
   (check_check(NewBoard,OppColor)->play(NewBoard,OppColor)
-  ;writeln("Шах!!!"), play(Board, Color)
+  ;writeln("Шах!!!"),
+  check_checkmate(NewBoard,OppColor)->
+  play(NewBoard, Color);
+  writeln("И мат!!!")
   ).
 
 
@@ -47,7 +50,7 @@ do_move(piece(Color, Name, X, Y), Board, X1, Y1, NewBoard):-
   append(PreBoard1,[piece(Color, Name, X1, Y1)],NewBoard).
   
 
-
+%Рисование доски и фигур
 draw_board(Board) :-
     nl, draw_row(1, 1, Board), nl.
   

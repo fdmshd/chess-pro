@@ -23,10 +23,10 @@ initial(piece(black,pawn,X,7)):- between(1, 8, X).
 
 
 
-initial1(piece(white,rook, 1, 1)).
-initial1(piece(white,knight,2,1)).
+initial1(piece(white,rook, 5, 5)).
+%initial1(piece(white,knight,2,1)).
 %initial1(piece(white,bishop,3,3)).
-initial1(piece(white,queen,5,5)).
+%initial1(piece(white,queen,5,5)).
 initial1(piece(white,king,4,1)).
 %initial1(piece(white,bishop,6,1)).
 %initial1(piece(white,knight,7,1)).

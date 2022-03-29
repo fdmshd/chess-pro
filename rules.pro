@@ -26,6 +26,14 @@ check_check(Board,PlayerColor):-
     opponent(PlayerColor,OpponentColor),
     not(piece_can_beat(piece(OpponentColor,_,_,_),Board,X,Y)).
 
+%проверить есть ли защита от мата
+check_checkmate(Board,Color):-
+    member(piece(Color,Name,X,Y),Board),
+    possible_moves(piece(Color,Name,X,Y),Board,X1,Y1),
+    premove(piece(Color,Name,X,Y), Board, X1,Y1,NewBoard),
+    check_check(NewBoard, Color).
+
+
 %TODO: Предикат для проверки мата задать
 %TODO: Логику провода пешек
 %TODO: Для пешки логику боя на проходе задать
@@ -280,7 +288,7 @@ possible_moves(piece(Color,king,X,Y),Board, N_X,N_Y):-
     ),
     can_move(Color,piece(Color,king, X,Y),Board, N_X,N_Y).
 
-%TODO:Возможные ходы ферзя
+%Возможные ходы ферзя
 possible_moves(piece(Color,queen,X,Y),Board, N_X,N_Y):-
     between(1,7, Shift),
     (
@@ -297,9 +305,13 @@ possible_moves(piece(Color,queen,X,Y),Board, N_X,N_Y):-
 
 %Возможные ходы ладьи
 possible_moves(piece(Color,rook,X,Y),Board, N_X,N_Y):-
-    between(1,8,N_X),
-    between(1,8,N_Y),
-    (X = N_X; Y = N_Y),
+    between(1,7, Shift),
+    (
+        N_X is X, N_Y is Y-Shift;
+        N_X is X, N_Y is Y+Shift;
+        N_X is X-Shift, N_Y is Y;
+        N_X is X+Shift, N_Y is Y
+    ),
     can_move(Color,piece(Color,rook, X,Y),Board, N_X,N_Y).
 
 %Возможные ходы коня
