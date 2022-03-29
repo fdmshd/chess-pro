@@ -19,7 +19,9 @@ play(Board, Color):-
   repeat,
   read_move(Name,X,Y,X1,Y1),
   can_move(Color,piece(Color, Name, X, Y), Board, X1, Y1),
-  do_move(piece(Color, Name,X,Y),Board,X1,Y1,NewBoard),
+  do_move(piece(Color, Name,X,Y),Board,X1,Y1,PreNewBoard),
+  delete(PreNewBoard,last_move(piece(_, _, _, _),_,_),  PreBoard),
+  append(PreBoard, [last_move(piece(Color, Name, X,Y), X1,Y1)], NewBoard),
   draw_board(NewBoard),
   opponent(Color,OppColor),
   (check_check(NewBoard,OppColor)->play(NewBoard,OppColor)
@@ -29,6 +31,18 @@ play(Board, Color):-
   writeln("И мат!!!")
   ).
 
+%Условия для боя на проходе
+do_move(piece(white,pawn,X,5), Board,X1,6, NewBoard):-
+  member(last_move(piece(black,pawn, X1, 7),X1, 5),Board),
+  delete(Board,piece(white, pawn, X, 5),  PreBoard),
+  delete(PreBoard,piece(black, pawn, X1, 5),  PreBoard1),
+  append(PreBoard1,[piece(white, pawn, X1, 6)],NewBoard).
+
+do_move(piece(black,pawn,X,4), Board,X1,3, NewBoard):-
+  member(last_move(piece(white,pawn, X1, 2),X1, 4),Board),
+  delete(Board,piece(black, pawn, X, 4),  PreBoard),
+  delete(PreBoard,piece(white, pawn, X1, 4),  PreBoard1),
+  append(PreBoard1,[piece(black, pawn, X1, 3)],NewBoard).
 
 %Условия для длинной рокировки
 do_move(piece(Color,king,4,Y), Board,6,Y, NewBoard):-
@@ -44,6 +58,7 @@ do_move(piece(Color,king,4,Y), Board,2,Y, NewBoard):-
   append(PreBoard1,[piece(Color, rook, 3, Y)],PreBoard2),
   append(PreBoard2,[piece(Color, king, 2, Y)],NewBoard),!.
 
+%Условия для обычного хода
 do_move(piece(Color, Name, X, Y), Board, X1, Y1, NewBoard):-
   delete(Board,piece(Color, Name, X, Y),  PreBoard),
   delete(PreBoard,piece(_,_, X1,Y1), PreBoard1 ),

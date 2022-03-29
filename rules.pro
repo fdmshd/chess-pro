@@ -34,7 +34,6 @@ check_checkmate(Board,Color):-
     check_check(NewBoard, Color).
 
 
-%TODO: Предикат для проверки мата задать
 %TODO: Логику провода пешек
 %TODO: Для пешки логику боя на проходе задать
 %TODO: Память фигур добавить для проверки возможности рокировки
@@ -179,6 +178,12 @@ canPieceMoveTo(piece(white, pawn, X, Y),Board, X1, Y1):-
     Xn is abs(X - X1),Xn = 1, Yn is Y1 - Y, Yn = 1,
     member(piece(black, _, X1, Y1), Board).
 
+canPieceMoveTo(piece(white, pawn, X, 5),Board, X1, Y1):-
+    member(last_move(piece(black,pawn, X_P, 7),X_P, 5),Board),
+    Xcheck is abs(X_P- X),
+    Xcheck = 1,
+    X1 = X_P, Y1 = 6.
+
 canPieceMoveTo(piece(black, pawn, X, Y),Board, X1, Y1):-
     X = X1, Yn is Y - Y1, Yn = 1,
     not(member(piece(_, _, X1, Y1), Board)).
@@ -192,6 +197,11 @@ canPieceMoveTo(piece(black, pawn, X, 7),Board, X1, Y1):-
     not(member(piece(_, _, X1, Y1), Board)),
     X = X1, Y1 = 5.
 
+canPieceMoveTo(piece(black, pawn, X, 4),Board, X1, Y1):-
+    member(last_move(piece(white,pawn, X_P, 2),X_P, 4),Board),
+    Xcheck is abs(X_P- X),
+    Xcheck = 1,
+    X1 = X_P, Y1 = 3.
 %rules for king
 canPieceMoveTo(piece(Color,king,X,Y),Board,X1,Y1):-
     opponent(Color,OppColor),
