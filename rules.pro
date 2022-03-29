@@ -35,9 +35,7 @@ check_checkmate(Board,Color):-
 
 
 %TODO: Логику провода пешек
-%TODO: Для пешки логику боя на проходе задать
 %TODO: Память фигур добавить для проверки возможности рокировки
-%TODO: Последний ход записывать для проверки боя на проходе
 % \/ - Предикаты для проверки хода по диагонали
 check_diagonal(X,Y,X1,Y1,Board):-
     X1>X,
@@ -213,6 +211,8 @@ canPieceMoveTo(piece(Color,king,X,Y),Board,X1,Y1):-
 
 canPieceMoveTo(piece(white,king,4,1), Board, 2, 1):-
     member(piece(white, rook, 1,1),Board),
+    not(member(already_moved(piece(white,king,4,1)),Board)),
+    not(member(already_moved(piece(white,rook,1,1)),Board)),
     check_l(4,1,2,1,Board),
     opponent(white,OppColor),
     not(piece_can_beat(piece(OppColor,_,_,_),Board,2,1)),
@@ -221,7 +221,9 @@ canPieceMoveTo(piece(white,king,4,1), Board, 2, 1):-
 
 canPieceMoveTo(piece(white,king,4,1), Board, 6, 1):-
     member(piece(white, rook, 8,1),Board),
-    check_l(4,1,8,1,Board),
+    not(member(already_moved(piece(white,king,4,1)),Board)),
+    not(member(already_moved(piece(white,rook,8,1)),Board)),
+    check_l(4,1,7,1,Board),
     opponent(white,OppColor),
     not(piece_can_beat(piece(OppColor,_,_,_),Board,4,1)),
     not(piece_can_beat(piece(OppColor,_,_,_),Board,5,1)),
@@ -230,6 +232,8 @@ canPieceMoveTo(piece(white,king,4,1), Board, 6, 1):-
 
 canPieceMoveTo(piece(black,king,4,8), Board, 2, 8):-
     member(piece(black, rook, 1,8),Board),
+    not(member(already_moved(piece(black,king,4,8)),Board)),
+    not(member(already_moved(piece(black,rook,1,8)),Board)),
     check_l(4,8,2,8,Board),
     opponent(black,OppColor),
     not(piece_can_beat(piece(OppColor,_,_,_),Board,2,8)),
@@ -239,7 +243,9 @@ canPieceMoveTo(piece(black,king,4,8), Board, 2, 8):-
 
 canPieceMoveTo(piece(black,king,4,8), Board, 6, 8):-
     member(piece(black, rook, 8,8),Board),
-    check_l(4,8,8,8,Board),
+    not(member(already_moved(piece(black,king,4,8)),Board)),
+    not(member(already_moved(piece(black,rook,8,8)),Board)),
+    check_l(4,8,7,8,Board),
     opponent(black,OppColor),
     not(piece_can_beat(piece(OppColor,_,_,_),Board,4,8)),
     not(piece_can_beat(piece(OppColor,_,_,_),Board,5,8)),

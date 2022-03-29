@@ -36,13 +36,13 @@ do_move(piece(white,pawn,X,5), Board,X1,6, NewBoard):-
   member(last_move(piece(black,pawn, X1, 7),X1, 5),Board),
   delete(Board,piece(white, pawn, X, 5),  PreBoard),
   delete(PreBoard,piece(black, pawn, X1, 5),  PreBoard1),
-  append(PreBoard1,[piece(white, pawn, X1, 6)],NewBoard).
+  append(PreBoard1,[piece(white, pawn, X1, 6)],NewBoard),!.
 
 do_move(piece(black,pawn,X,4), Board,X1,3, NewBoard):-
   member(last_move(piece(white,pawn, X1, 2),X1, 4),Board),
   delete(Board,piece(black, pawn, X, 4),  PreBoard),
   delete(PreBoard,piece(white, pawn, X1, 4),  PreBoard1),
-  append(PreBoard1,[piece(black, pawn, X1, 3)],NewBoard).
+  append(PreBoard1,[piece(black, pawn, X1, 3)],NewBoard),!.
 
 %Условия для длинной рокировки
 do_move(piece(Color,king,4,Y), Board,6,Y, NewBoard):-
@@ -58,12 +58,29 @@ do_move(piece(Color,king,4,Y), Board,2,Y, NewBoard):-
   append(PreBoard1,[piece(Color, rook, 3, Y)],PreBoard2),
   append(PreBoard2,[piece(Color, king, 2, Y)],NewBoard),!.
 
+%Запомнить, что ладья уже ходила
+do_move(piece(Color, rook, X, Y), Board, X1, Y1, NewBoard):-
+  delete(Board, already_moved(piece(Color,rook,X,Y)),Board1),
+  append(Board1,[already_moved(piece(Color, rook, X1, Y1))],Board2),
+  delete(Board2,piece(Color, rook, X, Y),  PreBoard),
+  delete(PreBoard,piece(_,_, X1,Y1), PreBoard1 ),
+  append(PreBoard1,[piece(Color, rook, X1, Y1)],NewBoard),!.
+
+%Запомнить, что король уже ходил
+do_move(piece(Color, king, X, Y), Board, X1, Y1, NewBoard):-
+  delete(Board, already_moved(piece(Color,king,X,Y)),Board1),
+  append(Board1,[already_moved(piece(Color, king, X1, Y1))],Board2),
+  delete(Board2,piece(Color, king, X, Y),  PreBoard),
+  delete(PreBoard,piece(_,_, X1,Y1), PreBoard1 ),
+  append(PreBoard1,[piece(Color, king, X1, Y1)],NewBoard),!.
+
 %Условия для обычного хода
 do_move(piece(Color, Name, X, Y), Board, X1, Y1, NewBoard):-
   delete(Board,piece(Color, Name, X, Y),  PreBoard),
   delete(PreBoard,piece(_,_, X1,Y1), PreBoard1 ),
   append(PreBoard1,[piece(Color, Name, X1, Y1)],NewBoard).
-  
+
+
 
 %Рисование доски и фигур
 draw_board(Board) :-
