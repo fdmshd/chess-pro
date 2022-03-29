@@ -98,23 +98,27 @@ pieceBetween(X,Y,X1,Y1, Board):-
 % Предикаты для проверки ходов по линиям (ладьи, ферзь)
 check_l(X,Y,X1,Y1, Board):-
     X = X1,Y1>Y,
+    Yn1 is Y1-1,
     Yn is Y +1,
-    not(check_vertical1(X,Yn,X1,Y1, Board)).
+    not(check_vertical1(X,Yn,X1,Yn1, Board)).
 
 check_l(X,Y,X1,Y1, Board):-
     X = X1,Y1<Y,
+    Yn1 is Y1 +1,
     Yn is Y - 1,
-    not(check_vertical2(X,Yn,X1,Y1, Board)).
+    not(check_vertical2(X,Yn,X1,Yn1, Board)).
 
 check_l(X,Y,X1,Y1, Board):-
     Y = Y1, X1 > X,
+    Xn1 is X1 -1,
     Xn is X +1,
-    not(check_horizontal1(Xn,Y,X1,Y1, Board)).
+    not(check_horizontal1(Xn,Y,Xn1,Y1, Board)).
 
 check_l(X,Y,X1,Y1, Board):-
     Y = Y1, X1 < X,
+    Xn1 is X1 +1,
     Xn is X - 1,
-    not(check_horizontal2(Xn,Y,X1,Y1, Board)).
+    not(check_horizontal2(Xn,Y,Xn1,Y1, Board)).
 
 check_horizontal1(X,Y,X1,Y, Board):-
     between(X,X1,Z),
