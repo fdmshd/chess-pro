@@ -27,7 +27,7 @@ play(Board, Color):-
   (check_check(NewBoard,OppColor)->play(NewBoard,OppColor)
   ;writeln("Шах!!!"),
   check_checkmate(NewBoard,OppColor)->
-  play(NewBoard, Color);
+  play(NewBoard, OppColor);
   writeln("И мат!!!")
   ).
 
